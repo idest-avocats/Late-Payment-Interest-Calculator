@@ -1,0 +1,725 @@
+<!doctype html>
+<!--
+  Intérêts moratoires / Default interest, id est avocats
+  Copyright (C) 2026 id est avocats Sàrl
+  SPDX-License-Identifier: AGPL-3.0-or-later
+  Les tableaux et textes juridiques sont en outre mis à disposition sous licence CC BY-NC 4.0.
+  Legal tables and texts are also made available under the CC BY-NC 4.0 licence.
+  Ce programme est distribué sans aucune garantie. Voir le fichier LICENSE.
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<script>try { var t = localStorage.getItem('idest-interets:theme'); if (t) { t = JSON.parse(t); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } } catch (e) {}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Calcul des intérêts moratoires (art. 104 CO) avec décompte pour réquisition de poursuite ou demande. Default interest calculator under Swiss law. id est avocats.">
+<title>Intérêts moratoires, id est avocats</title>
+<style>
+
+
+:root{
+  --rose:#E61E6E; --anthra:#333334; --turq:#069297; --orange:#F7A823; --cream:#FDF1DC; --lrose:#FAE0EB; --lgrey:#F2F2F2;
+  --bg:#F2F2F2; --panel:#FFFFFF; --ink:#333334; --muted:#68686C; --line:#DEDDE1; --field:#FFFFFF;
+  --date:#C8155C;
+  --ok-bg:#E3F3F3; --ok-ink:#05666A; --ok-line:#9ED3D4;
+  --warn-bg:#FDF1DC; --warn-ink:#7A4D00; --warn-line:#F7A823;
+  --bad-bg:#FAE0EB; --bad-ink:#9E0F47; --bad-line:#E61E6E;
+  --info-bg:#F2F2F2; --info-ink:#333334; --info-line:#DEDDE1;
+  --nbg:#333334; --legal-bg:#F2F2F2; --caution-bg:#FDF1DC; --caution-ink:#5A3A00; --auto-bg:#E3F3F3;
+  --font:Arial,"Helvetica Neue",Helvetica,sans-serif;
+  --head:"Grandview","Grandview Display",Arial,"Helvetica Neue",Helvetica,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B1B1C; --panel:#252526; --ink:#F2F2F2; --muted:#B3B3B8; --line:#3A3A3D; --field:#1F1F20; --date:#FF6FA5;
+    --ok-bg:#0F2E2F; --ok-ink:#8ED9DB; --ok-line:#1F5D5F;
+    --warn-bg:#352812; --warn-ink:#FFD58A; --warn-line:#8A6418;
+    --bad-bg:#3A1424; --bad-ink:#FFA9CA; --bad-line:#8E1F4C;
+    --info-bg:#2C2C2E; --info-ink:#E6E6E8; --info-line:#3A3A3D; --nbg:#E61E6E; --legal-bg:#2C2C2E; --caution-bg:#352812; --caution-ink:#FFD58A; --auto-bg:#0F2E2F; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B1B1C; --panel:#252526; --ink:#F2F2F2; --muted:#B3B3B8; --line:#3A3A3D; --field:#1F1F20; --date:#FF6FA5;
+  --ok-bg:#0F2E2F; --ok-ink:#8ED9DB; --ok-line:#1F5D5F;
+  --warn-bg:#352812; --warn-ink:#FFD58A; --warn-line:#8A6418;
+  --bad-bg:#3A1424; --bad-ink:#FFA9CA; --bad-line:#8E1F4C;
+  --info-bg:#2C2C2E; --info-ink:#E6E6E8; --info-line:#3A3A3D; --nbg:#E61E6E; --legal-bg:#2C2C2E; --caution-bg:#352812; --caution-ink:#FFD58A; --auto-bg:#0F2E2F; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+html{background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15.5px;line-height:1.5;-webkit-text-size-adjust:100%}
+.topband{height:6px;background:var(--rose)}
+.wrap{max-width:1140px;margin:0 auto;padding:26px 20px 40px}
+header{position:relative;padding-right:28px}
+header::after{content:"";position:absolute;right:0;top:4px;width:6px;height:64px;background:var(--orange)}
+.firm{font-weight:700;color:var(--rose);font-size:14px;letter-spacing:.01em}
+h1{font-family:var(--head);font-size:34px;line-height:1.12;font-weight:700;margin:4px 0 0;letter-spacing:-.01em}
+header p{margin:8px 0 0;color:var(--muted);max-width:72ch}
+.caution{margin-top:16px;background:var(--caution-bg);color:var(--caution-ink);border-left:5px solid var(--orange);border-radius:6px;padding:11px 14px;font-size:14.5px;max-width:84ch}
+.caution b{font-weight:700}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.02fr);gap:22px;margin-top:22px;align-items:start}
+@media (max-width:920px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--rose);border-radius:8px;padding:20px}
+.result{position:sticky;top:16px;border-top-color:var(--turq)}
+@media (max-width:920px){.result{position:static}}
+fieldset{border:0;margin:0 0 20px;padding:0}
+fieldset:last-of-type{margin-bottom:0}
+legend{font-family:var(--head);font-weight:700;font-size:17px;margin-bottom:8px;padding:0;display:flex;gap:10px;align-items:center}
+legend .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--nbg);color:#fff;font-size:13px;font-family:var(--font)}
+label{display:block;font-weight:700;font-size:14px;margin:12px 0 5px}
+.hint{font-size:13px;color:var(--muted);margin-top:5px}
+select,input[type=date],input[type=number]{width:100%;font:inherit;font-size:15.5px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:10px 11px;min-height:44px}
+select:focus,input:focus,button:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,var(--rose) 40%,transparent);outline-offset:1px;border-color:var(--rose)}
+.row{display:grid;grid-template-columns:1fr 140px;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:inherit;font-size:14px;font-weight:700;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--rose);border-color:var(--rose);color:#fff}
+.radios{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.radios label,.check{display:flex;gap:9px;align-items:flex-start;font-weight:400;margin:0;font-size:14.5px;cursor:pointer}
+.radios input,.check input{width:18px;height:18px;margin-top:2px;accent-color:var(--rose);flex:none}
+.check{margin-top:10px}
+.sub{margin-left:27px}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin:14px 0 2px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.legal{margin-top:10px;font-size:13.5px;color:var(--muted);background:var(--legal-bg);border-radius:6px;padding:9px 11px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.legal.ok{background:var(--ok-bg);color:var(--ok-ink)} .legal.warn{background:var(--warn-bg);color:var(--warn-ink)}
+input.auto{background:var(--auto-bg);font-weight:700}
+.opt{font-weight:400;color:var(--muted);font-size:13px}
+.headrow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.theme{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
+.theme button{font:inherit;font-size:12.5px;font-weight:700;color:var(--muted);background:transparent;border:0;padding:5px 11px;cursor:pointer}
+.theme button[aria-pressed="true"]{background:var(--anthra);color:#fff}
+.beta{display:inline-block;vertical-align:middle;margin-left:10px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--rose);border:1.5px solid var(--rose);border-radius:999px;padding:1px 8px;letter-spacing:.02em}
+.legal b{color:var(--ink)}
+.linkish{font:inherit;font-size:13.5px;font-weight:700;color:var(--rose);background:none;border:0;padding:3px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+
+.r-label{font-size:14px;color:var(--muted);font-weight:700}
+.date{font-family:var(--head);font-size:clamp(26px,4vw,38px);line-height:1.12;font-weight:700;color:var(--date);margin:4px 0 8px}
+.date.empty{color:var(--muted);font-weight:400;font-size:19px;font-family:var(--font)}
+.chip{display:inline-block;font-size:13px;font-weight:700;border-radius:999px;padding:3px 10px}
+.chip.ok{background:var(--ok-bg);color:var(--ok-ink)} .chip.soon{background:var(--warn-bg);color:var(--warn-ink)} .chip.late{background:var(--bad-bg);color:var(--bad-ink)}
+.alerts{display:flex;flex-direction:column;gap:8px;margin:14px 0 0}
+.alert{border-radius:6px;padding:10px 12px;font-size:14.5px;border:1px solid;border-left-width:5px}
+.alert.ok{background:var(--ok-bg);color:var(--ok-ink);border-color:var(--ok-line);border-left-color:var(--turq)}
+.alert.warn{background:var(--warn-bg);color:var(--warn-ink);border-color:var(--warn-line)}
+.alert.bad{background:var(--bad-bg);color:var(--bad-ink);border-color:var(--bad-line)}
+.alert.info{background:var(--info-bg);color:var(--info-ink);border-color:var(--info-line)}
+.alert b{font-weight:700}
+.alert .linkish{color:inherit;padding:0;margin-left:4px}
+.tl{margin-top:18px}
+.bar{display:flex;height:14px;border-radius:4px;overflow:hidden;background:var(--line)}
+.bar span{display:block;height:100%}
+.bar .c{background:var(--turq)}
+.bar .s{background:repeating-linear-gradient(135deg,var(--muted) 0 2px,transparent 2px 6px);opacity:.6}
+.bar .x{background:var(--orange)}
+.tl-ends{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:5px}
+.legendrow{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legendrow i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:5px;vertical-align:-2px}
+h2{font-family:var(--head);font-size:16.5px;margin:20px 0 6px}
+ol.steps{margin:0;padding-left:22px}
+ol.steps li{margin:5px 0;font-size:14.5px}
+.ref{color:var(--muted);font-size:13px}
+ul.rules{margin:0;padding-left:18px;font-size:14px;color:var(--muted)}
+ul.rules li{margin:4px 0}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{font:inherit;font-weight:700;font-size:14.5px;border-radius:6px;padding:10px 16px;cursor:pointer;border:1px solid var(--rose);background:var(--rose);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+footer{margin-top:30px;color:var(--muted);font-size:13px}
+footer .inner{max-width:92ch}
+footer p{margin:6px 0}
+details{margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 14px}
+summary{cursor:pointer;font-weight:700;color:var(--ink)}
+details p{color:var(--ink);font-size:13.5px}
+footer a{color:var(--rose)}
+.bottomband{background:var(--rose);color:#fff;font-size:13px;margin-top:26px}
+.bottomband .wrap{padding-top:12px;padding-bottom:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:520px){h1{font-size:28px}.row{grid-template-columns:1fr 112px}.panel{padding:16px}header::after{height:48px}}
+@media print{.topband,.bottomband,.caution,form,.actions,details{display:none!important}.grid{display:block}.panel{border:0}body{background:#fff}}
+
+.cards{display:flex;flex-direction:column;gap:12px}
+.card{border:1px solid var(--line);border-left:4px solid var(--turq);border-radius:6px;padding:12px 12px 10px;background:var(--field)}
+.card.pay{border-left-color:var(--orange)}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.card .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.card .grid3{display:grid;grid-template-columns:1.3fr 1fr 0.7fr;gap:8px}
+.card label{margin:8px 0 4px;font-size:13px}
+.card input[type=text]{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 10px;min-height:42px}
+.card select,.card input[type=date],.card input[type=number]{background:var(--panel);min-height:42px;padding:9px 10px;font-size:15px}
+.del{font:inherit;font-size:13px;font-weight:700;color:var(--muted);background:none;border:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.add{font:inherit;font-weight:700;font-size:14px;border-radius:6px;padding:9px 14px;cursor:pointer;border:1px dashed var(--rose);background:transparent;color:var(--rose);margin-top:10px}
+.total{font-family:var(--head);font-size:clamp(26px,4vw,36px);line-height:1.12;font-weight:700;color:var(--date);margin:4px 0 6px}
+.total.empty{color:var(--muted);font-weight:400;font-size:19px;font-family:var(--font)}
+.kpis{display:flex;flex-wrap:wrap;gap:8px}
+.kpi{background:var(--legal-bg);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--muted)}
+.kpi b{display:block;color:var(--ink);font-size:15px;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto;margin-top:8px}
+table.dc{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+table.dc th,table.dc td{padding:6px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.dc th:first-child,table.dc td:first-child{text-align:left;white-space:normal}
+table.dc th{font-size:12.5px;color:var(--muted);font-weight:700}
+table.dc tr.sum td{font-weight:700;border-bottom:2px solid var(--ink)}
+table.dc tr.cr td{background:var(--legal-bg);font-weight:700}
+.copyblock{margin-top:12px}
+.copyblock .cb-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.copyblock h3{font-family:var(--head);font-size:15px;margin:0}
+.copyblock textarea{width:100%;min-height:96px;margin-top:6px;font:13.5px/1.45 var(--font);color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:10px;resize:vertical}
+.btn.small{padding:6px 12px;font-size:13px}
+.f-rate.is-default{color:var(--muted);background:var(--legal-bg);font-style:italic}
+.deflabel{font-weight:400;font-size:11.5px;color:var(--muted);margin-left:4px}
+details.mini{margin-top:12px;background:transparent;border:1px solid var(--line);border-radius:6px;padding:8px 12px}
+details.mini summary{font-size:13.5px}
+details.mini p,details.mini li{font-size:12.5px;color:var(--muted);line-height:1.45}
+details.mini ul{margin:6px 0 0;padding-left:18px}
+@media (max-width:520px){.card .grid3{grid-template-columns:1fr 1fr}.card .grid3 > :first-child{grid-column:1 / -1}}
+
+.note-lang{font-size:12.5px;color:var(--muted);margin-top:4px}
+.toggles{display:flex;gap:8px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="topband" aria-hidden="true"></div>
+<div class="wrap">
+  <header>
+    <div class="headrow">
+      <div class="firm">id est avocats</div>
+      <div class="toggles">
+        <div class="theme" role="group" data-i18n-aria="langGroup" aria-label="Langue">
+          <button type="button" data-lang-set="fr" lang="fr">FR</button><button type="button" data-lang-set="en" lang="en">EN</button>
+        </div>
+        <div class="theme" role="group" data-i18n-aria="themeGroup" aria-label="Affichage">
+          <button type="button" data-theme-set="auto" data-i18n="themeAuto">Auto</button><button type="button" data-theme-set="light" data-i18n="themeLight">Clair</button><button type="button" data-theme-set="dark" data-i18n="themeDark">Sombre</button>
+        </div>
+      </div>
+    </div>
+    <h1><span data-i18n="title">Intérêts moratoires</span><span class="beta">beta</span></h1>
+    <p data-i18n="subtitle"></p>
+    <div class="caution" role="note" data-i18n-html="caution"></div>
+  </header>
+
+  <div class="grid">
+    <form class="panel" id="form" autocomplete="off" onsubmit="return false">
+      <fieldset>
+        <legend><span class="n">1</span><span data-i18n="lgParams"></span></legend>
+        <div class="row">
+          <div><label for="calc" data-i18n="lbCalc"></label><input id="calc" type="date"></div>
+          <div><label for="rate" data-i18n="lbRate"></label><input id="rate" type="number" min="0" max="100" step="0.01" value="5" inputmode="decimal"></div>
+        </div>
+        <div class="hint" data-i18n="hintRate"></div>
+        <label for="basis" data-i18n="lbBasis"></label>
+        <select id="basis">
+          <option value="act365" data-i18n="bAct365"></option>
+          <option value="act360" data-i18n="bAct360"></option>
+          <option value="e30360" data-i18n="b30360"></option>
+        </select>
+        <label class="check"><input type="checkbox" id="incl"> <span data-i18n="lbIncl"></span></label>
+        <div class="hint" data-i18n="hintIncl"></div>
+        <label class="check"><input type="checkbox" id="r05"> <span data-i18n="lbR05"></span></label>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="n">2</span><span data-i18n="lgClaims"></span></legend>
+        <div class="cards" id="claims"></div>
+        <button type="button" class="add" id="addClaim" data-i18n="addClaim"></button>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="n">3</span><span data-i18n="lgPays"></span> <span class="opt" data-i18n="optional"></span></legend>
+        <div class="hint" style="margin-top:0" data-i18n="hintPays"></div>
+        <div class="cards" id="pays" style="margin-top:10px"></div>
+        <button type="button" class="add" id="addPay" data-i18n="addPay"></button>
+      </fieldset>
+    </form>
+
+    <section class="panel result" aria-live="polite" aria-labelledby="rTitle">
+      <div class="r-label" id="rTitle"></div>
+      <div class="total empty" id="rTotal"></div>
+      <div class="kpis" id="rKpis"></div>
+      <div class="alerts" id="rAlerts"></div>
+      <div id="rDetails" hidden>
+        <h2 data-i18n="hStatement"></h2>
+        <div class="tablewrap"><table class="dc" id="rTable"></table></div>
+        <div class="copyblock">
+          <div class="cb-head"><h3 data-i18n="hLP"></h3><button type="button" class="btn small" data-copy="txtLP" data-i18n="copy"></button></div>
+          <textarea id="txtLP" readonly></textarea>
+          <div class="note-lang" data-i18n="noteLP"></div>
+        </div>
+        <div class="copyblock">
+          <div class="cb-head"><h3 data-i18n="hConcl"></h3><button type="button" class="btn small" data-copy="txtConcl" data-i18n="copy"></button></div>
+          <textarea id="txtConcl" readonly></textarea>
+          <div class="note-lang" data-i18n="noteConcl"></div>
+        </div>
+        <div class="copyblock">
+          <div class="cb-head"><h3 data-i18n="hDc"></h3><button type="button" class="btn small" data-copy="txtDc" data-i18n="copy"></button></div>
+          <textarea id="txtDc" readonly></textarea>
+        </div>
+      </div>
+      <details class="mini">
+        <summary data-i18n="hPrinciples"></summary>
+        <ul class="rules" id="principles"></ul>
+      </details>
+      <details class="mini" id="disclaimer">
+        <summary data-i18n="hDisclaimer"></summary>
+        <div id="disclaimerText"></div>
+      </details>
+      <div class="actions">
+        <button class="btn ghost" id="print" type="button" data-i18n="print"></button>
+        <button class="btn ghost" id="reset" type="button" data-i18n="reset"></button>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="inner">
+      <p data-i18n-html="licence"></p>
+      <p id="srcLink"></p>
+    </div>
+  </footer>
+</div>
+<div class="bottomband"><div class="wrap"><span>© 2026 id est avocats Sàrl</span><span data-i18n="band"></span></div></div>
+
+<script>
+// ===== Moteur de calcul des intérêts moratoires / Default interest engine =====
+// id est avocats, outil d'aide au calcul. À vérifier dans chaque cas.
+// SPDX-License-Identifier: AGPL-3.0-or-later
+const Interets = (() => {
+  const DAY = 86400000;
+  const dn = (y, m, d) => Math.round(Date.UTC(y, m - 1, d) / DAY);
+  const ymd = n => { const t = new Date(n * DAY); return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate() }; };
+  const parseISO = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return m ? dn(+m[1], +m[2], +m[3]) : null; };
+  const toISO = n => { const a = ymd(n); return `${a.y}-${String(a.m).padStart(2, '0')}-${String(a.d).padStart(2, '0')}`; };
+  const MONTHS = {
+    fr: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+    en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  };
+  const fmtShort = n => { const a = ymd(n); return `${String(a.d).padStart(2, '0')}.${String(a.m).padStart(2, '0')}.${a.y}`; };
+  const fmtLong = (n, lang = 'fr') => { const a = ymd(n); return lang === 'en' ? `${a.d} ${MONTHS.en[a.m - 1]} ${a.y}` : `${a.d === 1 ? '1er' : a.d} ${MONTHS.fr[a.m - 1]} ${a.y}`; };
+  const round2 = x => Math.round((x + Number.EPSILON) * 100) / 100;
+  const fmtCHF = x => {
+    const neg = x < 0, s = Math.abs(round2(x)).toFixed(2), [i, d] = s.split('.');
+    return (neg ? '−' : '') + i.replace(/\B(?=(\d{3})+(?!\d))/g, "'") + '.' + d;
+  };
+  const fmtRate = (r, lang = 'fr') => { const s = String(Math.round(r * 100) / 100); return lang === 'en' ? s : s.replace('.', ','); };
+
+  // Nombre de jours entre from (inclus) et toExcl (exclu)
+  function days(from, toExcl, basis) {
+    if (toExcl <= from) return 0;
+    if (basis === 'e30360') {
+      const a = ymd(from), b = ymd(toExcl);
+      const d1 = Math.min(a.d, 30), d2 = Math.min(b.d, 30);
+      return Math.max(0, 360 * (b.y - a.y) + 30 * (b.m - a.m) + (d2 - d1));
+    }
+    return toExcl - from;
+  }
+  const denom = basis => basis === 'act365' ? 365 : 360;
+  const interest = (cap, rate, d, basis) => round2(cap * rate / 100 * d / denom(basis));
+
+  // c : { amount, rate, start, end, basis, incl, payments:[{date, amount}] }
+  // notes : { k: 'excess' | 'beforeStart' | 'afterEnd', date, amount }
+  function computeClaim(c) {
+    let capital = c.amount, backlog = 0, last = c.start, backlogFrom = c.start;
+    const lines = [], notes = [];
+    const pays = (c.payments || []).slice().sort((a, b) => a.date - b.date);
+    const toCapitalOnly = p => {
+      const toCap = Math.min(p.amount, capital), excess = round2(p.amount - toCap);
+      capital = round2(capital - toCap);
+      lines.push({ type: 'pay', date: p.date, amount: p.amount, toInterest: 0, toCapital: toCap, excess });
+      if (excess > 0) notes.push({ k: 'excess', date: p.date, amount: excess });
+    };
+    if (!(c.rate > 0)) {
+      pays.forEach(toCapitalOnly);
+      return { capital, backlog: 0, interestTotal: 0, interestFrom: null, lines, notes };
+    }
+    for (const p of pays) {
+      if (p.date < c.start) { toCapitalOnly(p); notes.push({ k: 'beforeStart', date: p.date }); continue; }
+      if (p.date > c.end) { notes.push({ k: 'afterEnd', date: p.date }); continue; }
+      const d = days(last, p.date, c.basis);
+      if (d > 0) {
+        const i = interest(capital, c.rate, d, c.basis);
+        lines.push({ type: 'period', from: last, to: p.date - 1, days: d, capital, rate: c.rate, interest: i });
+        backlog = round2(backlog + i);
+      }
+      let pay = p.amount;
+      const toInterest = Math.min(pay, backlog); backlog = round2(backlog - toInterest); pay = round2(pay - toInterest);
+      const toCapital = Math.min(pay, capital); capital = round2(capital - toCapital);
+      const excess = round2(pay - toCapital);
+      lines.push({ type: 'pay', date: p.date, amount: p.amount, toInterest, toCapital, excess });
+      if (excess > 0) notes.push({ k: 'excess', date: p.date, amount: excess });
+      if (backlog === 0) backlogFrom = p.date;
+      last = p.date;
+    }
+    const endExcl = c.incl ? c.end + 1 : c.end;
+    const d = days(last, endExcl, c.basis);
+    let final = 0;
+    if (d > 0 && capital > 0) {
+      final = interest(capital, c.rate, d, c.basis);
+      lines.push({ type: 'period', from: last, to: endExcl - 1, days: d, capital, rate: c.rate, interest: final });
+    }
+    return { capital, backlog, backlogFrom, backlogTo: last - 1, interestTotal: round2(backlog + final), interestFrom: last, lines, notes };
+  }
+
+  return { dn, ymd, parseISO, toISO, fmtShort, fmtLong, fmtCHF, fmtRate, round2, days, computeClaim };
+})();
+
+</script>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const I = Interets;
+const store = { get(k, d) { try { const v = localStorage.getItem('idest-interets:' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem('idest-interets:' + k, JSON.stringify(v)); } catch (e) {} } };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let LANG = store.get('lang', null) || ((navigator.language || 'fr').toLowerCase().startsWith('fr') ? 'fr' : 'en');
+
+// ---------- Textes / Texts ----------
+const STR = {
+  fr: {
+    pageTitle: 'Intérêts moratoires, id est avocats', langGroup: 'Langue', themeGroup: 'Affichage', themeAuto: 'Auto', themeLight: 'Clair', themeDark: 'Sombre',
+    title: 'Intérêts moratoires',
+    subtitle: 'Calcul des intérêts moratoires sur une ou plusieurs créances, avec acomptes, et décompte prêt à copier dans une réquisition de poursuite ou dans les conclusions d’une demande.',
+    caution: '<b>Aide au calcul uniquement.</b> Vérifiez vous-même le point de départ des intérêts (demeure), le taux applicable et l’imputation des paiements. Voir l’avertissement complet sous le résultat.',
+    lgParams: 'Paramètres', lbCalc: 'Décompte arrêté au', lbRate: 'Taux par défaut (%)',
+    hintRate: 'Taux légal de 5 % l’an (art. 104 al. 1 CO). Un taux conventionnel supérieur peut être réclamé (art. 104 al. 2 CO).',
+    lbBasis: 'Base de calcul', bAct365: 'Jours effectifs / 365 (usuel)', bAct360: 'Jours effectifs / 360', b30360: '30 / 360 (convention bancaire)',
+    lbIncl: 'Compter aussi le dernier jour', hintIncl: 'Par défaut, les jours sont comptés du jour de départ inclus au jour d’arrêt exclu.', lbR05: 'Arrondir le total aux 5 centimes',
+    lgClaims: 'Créances', addClaim: 'Ajouter une créance', lgPays: 'Acomptes', optional: '(facultatif)',
+    hintPays: 'Chaque acompte est imputé d’abord sur les intérêts échus, puis sur le capital (art. 85 al. 1 CO).', addPay: 'Ajouter un acompte',
+    claimN: n => `Créance ${n}`, remove: 'Supprimer', lbCause: 'Titre ou cause', phCause: 'ex. Facture n° 2026-014 du 15.02.2026', lbAmount: 'Montant (CHF)', lbStart: 'Intérêts dès le',
+    lbClaimRate: 'Taux (%)', byDefault: 'par défaut', rateTitle: 'Taux par défaut, modifiable', lbEnd: 'Intérêts jusqu’au', optEnd: '(facultatif, sinon date du décompte)',
+    payTitle: 'Acompte', lbPayClaim: 'Imputé sur', lbPayDate: 'Date du paiement',
+    totalDue: 'Total dû', totalDueAt: d => `Total dû au ${d}`, emptyTotal: 'Complétez au moins une créance.', kCap: 'Capital', kInt: 'Intérêts', kClaims: 'Créances',
+    hStatement: 'Décompte', thItem: 'Poste', thFrom: 'Du', thTo: 'Au', thDays: 'jours', thDays30: 'jours (30/360)', thCap: 'Capital', thRate: 'Taux', thInt: 'Intérêts',
+    rowInt: 'Intérêts', rowPay: (d, a, i, c, x) => `Acompte du ${d} : CHF ${a}, dont ${i} sur intérêts et ${c} sur capital${x ? ' (excédent ' + x + ')' : ''}`,
+    rowBal: n => `Solde de la créance ${n}`, rowTotal: 'Total',
+    hLP: 'Réquisition de poursuite', hConcl: 'Conclusions d’une demande', hDc: 'Décompte chiffré', copy: 'Copier', copied: 'Copié', noteLP: '', noteConcl: '',
+    lpWith: (k, a, r, d, cause) => `${k}. CHF ${a} avec intérêt à ${r} % l’an dès le ${d}\n   Titre ou cause de l’obligation : ${cause}`,
+    lpWithout: (k, a, cause) => `${k}. CHF ${a}, sans intérêt\n   Titre ou cause de l’obligation : ${cause}`,
+    lpBacklog: (k, a, r, cause, f, t) => `${k}. CHF ${a}, sans intérêt\n   Titre ou cause de l’obligation : intérêts moratoires à ${r} % échus sur ${cause}, du ${f} au ${t}`,
+    cWith: (a, r, d) => `CHF ${a} avec intérêt à ${r} % l’an dès le ${d}`, cWithout: a => `CHF ${a}`, cBacklog: (a, d) => `CHF ${a} à titre d’intérêts moratoires échus au ${d}`,
+    cOne: x => `Condamner [la partie défenderesse] à payer à [la partie demanderesse] la somme de ${x}.`, cMany: 'Condamner [la partie défenderesse] à payer à [la partie demanderesse] :',
+    dcTitle: d => `Décompte des intérêts moratoires${d ? ' arrêté au ' + d : ''}`, dcBasis: (b, incl) => `Base de calcul : ${b}${incl ? ', dernier jour compté' : ''}`,
+    dcClaim: (n, l, a) => `Créance ${n}${l ? ' (' + l + ')' : ''} : CHF ${a}`,
+    dcPeriod: (r, c, f, t, n, i) => `  Intérêts ${r} % sur CHF ${c} du ${f} au ${t} (${n} jours) : CHF ${i}`,
+    dcPay: (d, a, i, c, x) => `  Acompte du ${d} : CHF ${a} (intérêts ${i}, capital ${c}${x ? ', excédent ' + x : ''})`,
+    dcBal: (c, i) => `  Solde : capital CHF ${c}, intérêts CHF ${i}`,
+    dcTotal: (c, i, t, r05) => `Total : capital CHF ${c} + intérêts CHF ${i} = CHF ${t}${r05 ? ' (arrondi aux 5 centimes)' : ''}`,
+    aAmount: n => `Créance ${n} : le montant doit être positif.`, aRate: n => `Créance ${n} : indiquez le taux.`, aStart: n => `Créance ${n} : indiquez la date dès laquelle les intérêts courent.`,
+    aCalc: 'Indiquez la date à laquelle le décompte est arrêté.', aOrder: n => `Créance ${n} : la date de fin précède le début des intérêts.`,
+    aLow: (n, r) => `Créance ${n} : taux de ${r} %. L’intérêt moratoire légal est de 5 % l’an, même si un taux inférieur a été convenu (art. 104 al. 1 CO).`,
+    aHigh: (n, r) => `Créance ${n} : taux de ${r} %, admissible s’il est stipulé au contrat (art. 104 al. 2 CO) ou, entre commerçants, au taux de l’escompte (art. 104 al. 3 CO).`,
+    nExcess: (n, d, x) => `Créance ${n} : l’acompte du ${d} dépasse le solde de ${x} francs.`,
+    nBefore: (n, d) => `Créance ${n} : l’acompte du ${d}, antérieur au début des intérêts, est imputé sur le capital.`,
+    nAfter: (n, d) => `Créance ${n} : l’acompte du ${d} est postérieur à la date d’arrêt et n’est pas pris en compte.`,
+    aOrphan: 'Un acompte n’est rattaché à aucune créance.',
+    hPrinciples: 'Principes juridiques',
+    principles: [
+      'Le débiteur en demeure pour le paiement d’une somme d’argent doit l’intérêt moratoire à 5 % l’an, même si un taux inférieur avait été convenu (art. 104 al. 1 CO). Un taux conventionnel supérieur peut être exigé (art. 104 al. 2 CO).',
+      'Les intérêts courent dès la demeure : en principe dès le lendemain de l’échéance convenue (art. 102 al. 2 CO) ou dès l’interpellation (art. 102 al. 1 CO). La notification d’un commandement de payer ou une demande en justice valent interpellation.',
+      'Pas d’intérêts sur les intérêts moratoires (art. 105 al. 3 CO). Pour des intérêts, des arrérages ou une somme donnée, l’intérêt moratoire ne court qu’à partir de la poursuite ou de la demande en justice (art. 105 al. 1 CO).',
+      'Un paiement partiel s’impute d’abord sur les intérêts et les frais échus, puis sur le capital (art. 85 al. 1 CO). En présence de plusieurs dettes, l’imputation suit les art. 86 et 87 CO : choisissez la créance concernée pour chaque acompte.',
+      'Dans la réquisition de poursuite, chaque créance est indiquée avec son taux et la date dès laquelle les intérêts courent ; l’office ne calcule pas les intérêts. Les intérêts déjà échus peuvent être réclamés comme une créance distincte, sans intérêts.',
+    ],
+    hDisclaimer: 'Avertissement',
+    disclaimer: [
+      'Cet outil est mis à disposition gratuitement par id est avocats Sàrl à titre d’aide au calcul. Il ne constitue pas un conseil juridique et son utilisation ne crée aucune relation de mandat avec l’étude.',
+      'L’outil est en phase de test (beta) et peut contenir des erreurs. Les textes légaux ont été consultés en octobre 2026 ; ils peuvent avoir été modifiés depuis.',
+      'Les résultats sont indicatifs. Ils dépendent des informations saisies et de règles simplifiées (base de calcul, imputation des paiements, arrondis). L’utilisateur doit vérifier lui-même chaque calcul au regard de la loi applicable, du contrat, de la jurisprudence et des circonstances du cas.',
+      'Dans toute la mesure autorisée, id est avocats Sàrl décline toute responsabilité pour les conséquences de l’utilisation de l’outil.',
+      'id est avocats ne collecte aucune donnée dans le cadre de l’utilisation de l’outil : les calculs sont effectués dans le navigateur et les montants saisis ne sont pas conservés. Seuls le mode d’affichage et la langue choisis sont mémorisés localement sur l’appareil. L’outil est hébergé sur le site GitHub, qui peut collecter certaines informations, notamment au moyen de cookies, conformément à sa propre déclaration relative à la protection des données.',
+    ],
+    print: 'Imprimer', reset: 'Réinitialiser',
+    licence: '<b>Licence :</b> code sous licence <a href="https://www.gnu.org/licenses/agpl-3.0.html">GNU AGPL 3.0</a> ou version ultérieure ; tableaux et textes juridiques sous licence <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.fr">CC BY-NC 4.0</a> (attribution : id est avocats Sàrl).',
+    source: 'Code source :', band: 'Outil d’aide au calcul, à vérifier dans chaque cas',
+  },
+  en: {
+    pageTitle: 'Default interest, id est avocats', langGroup: 'Language', themeGroup: 'Display', themeAuto: 'Auto', themeLight: 'Light', themeDark: 'Dark',
+    title: 'Default interest',
+    subtitle: 'Calculation of default interest on one or more claims under Swiss law, with part payments, and a statement ready to copy into a debt collection request or the prayers for relief of a statement of claim.',
+    caution: '<b>Calculation aid only.</b> Check the start date of interest (default), the applicable rate and the allocation of payments yourself. See the full disclaimer below the result.',
+    lgParams: 'Parameters', lbCalc: 'Statement as at', lbRate: 'Default rate (%)',
+    hintRate: 'Statutory rate of 5% per annum (Art. 104 para. 1 CO). A higher contractual rate may be claimed (Art. 104 para. 2 CO).',
+    lbBasis: 'Day-count basis', bAct365: 'Actual days / 365 (usual)', bAct360: 'Actual days / 360', b30360: '30 / 360 (banking convention)',
+    lbIncl: 'Also count the last day', hintIncl: 'By default, days are counted from the start date (included) to the statement date (excluded).', lbR05: 'Round the total to 5 centimes',
+    lgClaims: 'Claims', addClaim: 'Add a claim', lgPays: 'Part payments', optional: '(optional)',
+    hintPays: 'Each part payment is applied first to accrued interest, then to the principal (Art. 85 para. 1 CO).', addPay: 'Add a part payment',
+    claimN: n => `Claim ${n}`, remove: 'Remove', lbCause: 'Basis of the claim', phCause: 'e.g. Invoice no. 2026-014 of 15.02.2026', lbAmount: 'Amount (CHF)', lbStart: 'Interest from',
+    lbClaimRate: 'Rate (%)', byDefault: 'default', rateTitle: 'Default rate, can be changed', lbEnd: 'Interest until', optEnd: '(optional, otherwise statement date)',
+    payTitle: 'Part payment', lbPayClaim: 'Applied to', lbPayDate: 'Payment date',
+    totalDue: 'Total due', totalDueAt: d => `Total due as at ${d}`, emptyTotal: 'Complete at least one claim.', kCap: 'Principal', kInt: 'Interest', kClaims: 'Claims',
+    hStatement: 'Statement', thItem: 'Item', thFrom: 'From', thTo: 'To', thDays: 'days', thDays30: 'days (30/360)', thCap: 'Principal', thRate: 'Rate', thInt: 'Interest',
+    rowInt: 'Interest', rowPay: (d, a, i, c, x) => `Part payment of ${d}: CHF ${a}, of which ${i} to interest and ${c} to principal${x ? ' (excess ' + x + ')' : ''}`,
+    rowBal: n => `Balance of claim ${n}`, rowTotal: 'Total',
+    hLP: 'Debt collection request', hConcl: 'Prayers for relief', hDc: 'Interest statement', copy: 'Copy', copied: 'Copied',
+    noteLP: 'The debt collection request must be filed in an official language of the debt collection office (French in Vaud and Geneva). The English text is for reference only.',
+    noteConcl: 'Court proceedings are conducted in the official language of the court. The English text is for reference only.',
+    lpWith: (k, a, r, d, cause) => `${k}. CHF ${a} plus interest at ${r}% p.a. from ${d}\n   Basis of the claim: ${cause}`,
+    lpWithout: (k, a, cause) => `${k}. CHF ${a}, without interest\n   Basis of the claim: ${cause}`,
+    lpBacklog: (k, a, r, cause, f, t) => `${k}. CHF ${a}, without interest\n   Basis of the claim: default interest at ${r}% accrued on ${cause}, from ${f} to ${t}`,
+    cWith: (a, r, d) => `CHF ${a} plus interest at ${r}% per annum from ${d}`, cWithout: a => `CHF ${a}`, cBacklog: (a, d) => `CHF ${a} as default interest accrued up to ${d}`,
+    cOne: x => `Order [the respondent] to pay [the claimant] ${x}.`, cMany: 'Order [the respondent] to pay [the claimant]:',
+    dcTitle: d => `Statement of default interest${d ? ' as at ' + d : ''}`, dcBasis: (b, incl) => `Day-count basis: ${b}${incl ? ', last day counted' : ''}`,
+    dcClaim: (n, l, a) => `Claim ${n}${l ? ' (' + l + ')' : ''}: CHF ${a}`,
+    dcPeriod: (r, c, f, t, n, i) => `  Interest at ${r}% on CHF ${c} from ${f} to ${t} (${n} days): CHF ${i}`,
+    dcPay: (d, a, i, c, x) => `  Part payment of ${d}: CHF ${a} (interest ${i}, principal ${c}${x ? ', excess ' + x : ''})`,
+    dcBal: (c, i) => `  Balance: principal CHF ${c}, interest CHF ${i}`,
+    dcTotal: (c, i, t, r05) => `Total: principal CHF ${c} + interest CHF ${i} = CHF ${t}${r05 ? ' (rounded to 5 centimes)' : ''}`,
+    aAmount: n => `Claim ${n}: the amount must be positive.`, aRate: n => `Claim ${n}: enter the rate.`, aStart: n => `Claim ${n}: enter the date from which interest runs.`,
+    aCalc: 'Enter the date of the statement.', aOrder: n => `Claim ${n}: the end date precedes the start of interest.`,
+    aLow: (n, r) => `Claim ${n}: rate of ${r}%. Statutory default interest is 5% per annum, even where a lower rate was agreed (Art. 104 para. 1 CO).`,
+    aHigh: (n, r) => `Claim ${n}: rate of ${r}%, admissible if stipulated in the contract (Art. 104 para. 2 CO) or, between merchants, at the discount rate (Art. 104 para. 3 CO).`,
+    nExcess: (n, d, x) => `Claim ${n}: the part payment of ${d} exceeds the balance by CHF ${x}.`,
+    nBefore: (n, d) => `Claim ${n}: the part payment of ${d}, made before interest started to run, is applied to the principal.`,
+    nAfter: (n, d) => `Claim ${n}: the part payment of ${d} is after the statement date and is not taken into account.`,
+    aOrphan: 'A part payment is not linked to any claim.',
+    hPrinciples: 'Legal principles',
+    principles: [
+      'A debtor in default on the payment of a sum of money owes default interest at 5% per annum, even where a lower contractual rate was agreed (Art. 104 para. 1 CO). A higher contractual rate may also be claimed (Art. 104 para. 2 CO).',
+      'Interest runs from the date of default: as a rule from the day after the agreed due date (Art. 102 para. 2 CO) or from the formal reminder (Art. 102 para. 1 CO). Service of a payment order or of a statement of claim constitutes a formal reminder.',
+      'No interest is payable on default interest (Art. 105 para. 3 CO). For interest, annuities or a sum promised as a gift, default interest runs only from the commencement of debt collection or court proceedings (Art. 105 para. 1 CO).',
+      'A part payment is applied first to accrued interest and costs, then to the principal (Art. 85 para. 1 CO). Where there are several debts, allocation follows Art. 86 and 87 CO: select the relevant claim for each part payment.',
+      'In the debt collection request, each claim is stated with its rate and the date from which interest runs; the debt collection office does not calculate interest. Interest already accrued may be claimed as a separate claim, without interest.',
+    ],
+    hDisclaimer: 'Disclaimer',
+    disclaimer: [
+      'This tool is provided free of charge by id est avocats Sàrl as a calculation aid. It does not constitute legal advice and its use does not create any client relationship with the firm.',
+      'The tool is in a test phase (beta) and may contain errors. The legal texts were consulted in October 2026; they may have been amended since.',
+      'The results are indicative. They depend on the information entered and on simplified rules (day-count basis, allocation of payments, rounding). Users must check each calculation themselves against the applicable law, the contract, case law and the circumstances of the case.',
+      'To the fullest extent permitted by law, id est avocats Sàrl accepts no liability for the consequences of using the tool.',
+      'id est avocats does not collect any data through the use of the tool: calculations are performed in the browser and the amounts entered are not stored. Only the chosen display mode and language are stored locally on the device. The tool is hosted on GitHub, which may collect certain information, including by means of cookies, in accordance with its own privacy statement.',
+    ],
+    print: 'Print', reset: 'Reset',
+    licence: '<b>Licence:</b> code under the <a href="https://www.gnu.org/licenses/agpl-3.0.html">GNU AGPL 3.0</a> or any later version; legal tables and texts under the <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> licence (attribution: id est avocats Sàrl).',
+    source: 'Source code:', band: 'Calculation aid, to be verified in each case',
+  },
+};
+const T = () => STR[LANG];
+const fmt = I.fmtCHF, fs = I.fmtShort, fl = d => I.fmtLong(d, LANG), fr = r => I.fmtRate(r, LANG);
+
+// ---------- Cartes ----------
+let seq = 0;
+function claimCard(data = {}) {
+  const id = ++seq, el = document.createElement('div');
+  el.className = 'card'; el.dataset.id = id;
+  el.innerHTML = `
+    <div class="card-head"><span class="cl-title"></span><button type="button" class="del" data-i18n="remove"></button></div>
+    <label><span data-i18n="lbCause"></span> <span class="opt" data-i18n="optional"></span></label>
+    <input type="text" class="f-label" data-i18n-ph="phCause" value="${esc(data.label || '')}">
+    <div class="grid3">
+      <div><label data-i18n="lbAmount"></label><input type="number" class="f-amount" min="0" step="0.01" inputmode="decimal" value="${data.amount ?? ''}"></div>
+      <div><label data-i18n="lbStart"></label><input type="date" class="f-start" value="${data.start || ''}"></div>
+      <div><label><span data-i18n="lbClaimRate"></span> <span class="deflabel" data-i18n="byDefault"></span></label><input type="number" class="f-rate is-default" min="0" max="100" step="0.01" inputmode="decimal" data-i18n-title="rateTitle" value="${data.rate ?? $('#rate').value}"></div>
+    </div>
+    <label><span data-i18n="lbEnd"></span> <span class="opt" data-i18n="optEnd"></span></label>
+    <input type="date" class="f-end" value="${data.end || ''}">`;
+  el.querySelector('.del').onclick = () => { el.remove(); renumber(); update(); };
+  el.querySelectorAll('input').forEach(i => i.addEventListener('input', () => {
+    if (i.classList.contains('f-rate')) { i.dataset.touched = '1'; i.classList.remove('is-default'); el.querySelector('.deflabel').hidden = true; }
+    update();
+  }));
+  $('#claims').appendChild(el);
+  translate(el); renumber();
+  return el;
+}
+function payCard(data = {}) {
+  const el = document.createElement('div');
+  el.className = 'card pay';
+  el.innerHTML = `
+    <div class="card-head"><span data-i18n="payTitle"></span><button type="button" class="del" data-i18n="remove"></button></div>
+    <div class="grid3">
+      <div><label data-i18n="lbPayClaim"></label><select class="p-claim"></select></div>
+      <div><label data-i18n="lbPayDate"></label><input type="date" class="p-date" value="${data.date || ''}"></div>
+      <div><label data-i18n="lbAmount"></label><input type="number" class="p-amount" min="0" step="0.01" inputmode="decimal" value="${data.amount ?? ''}"></div>
+    </div>`;
+  el.querySelector('.del').onclick = () => { el.remove(); update(); };
+  el.querySelectorAll('input,select').forEach(i => { i.addEventListener('input', update); i.addEventListener('change', update); });
+  $('#pays').appendChild(el);
+  translate(el); refreshPaySelects();
+  return el;
+}
+function renumber() {
+  [...document.querySelectorAll('#claims .card')].forEach((c, i) => { c.querySelector('.cl-title').textContent = T().claimN(i + 1); });
+  refreshPaySelects();
+}
+function refreshPaySelects() {
+  const claims = [...document.querySelectorAll('#claims .card')];
+  document.querySelectorAll('.p-claim').forEach(sel => {
+    const prev = sel.value;
+    sel.innerHTML = claims.map((c, i) => `<option value="${c.dataset.id}">${T().claimN(i + 1)}</option>`).join('');
+    if (claims.some(c => c.dataset.id === prev)) sel.value = prev;
+  });
+}
+
+// ---------- Traduction ----------
+function translate(root = document) {
+  const t = T();
+  root.querySelectorAll('[data-i18n]').forEach(e => { const v = t[e.dataset.i18n]; if (typeof v === 'string') e.textContent = v; });
+  root.querySelectorAll('[data-i18n-html]').forEach(e => { e.innerHTML = t[e.dataset.i18nHtml]; });
+  root.querySelectorAll('[data-i18n-ph]').forEach(e => { e.placeholder = t[e.dataset.i18nPh]; });
+  root.querySelectorAll('[data-i18n-title]').forEach(e => { e.title = t[e.dataset.i18nTitle]; });
+  root.querySelectorAll('[data-i18n-aria]').forEach(e => { e.setAttribute('aria-label', t[e.dataset.i18nAria]); });
+}
+function applyLang() {
+  const t = T();
+  document.documentElement.lang = LANG;
+  document.title = t.pageTitle;
+  translate();
+  $('#principles').innerHTML = t.principles.map(p => `<li>${p}</li>`).join('');
+  $('#disclaimerText').innerHTML = t.disclaimer.map(p => `<p>${p}</p>`).join('');
+  document.querySelectorAll('[data-lang-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.langSet === LANG)));
+  document.querySelectorAll('.note-lang').forEach(n => { n.hidden = !n.textContent; });
+  renumber(); setSource(); update();
+}
+
+const num = v => { const x = parseFloat(String(v).replace(',', '.')); return Number.isFinite(x) ? x : null; };
+function readClaims() {
+  return [...document.querySelectorAll('#claims .card')].map((c, i) => ({
+    id: c.dataset.id, no: i + 1,
+    label: c.querySelector('.f-label').value.trim(),
+    amount: num(c.querySelector('.f-amount').value),
+    start: I.parseISO(c.querySelector('.f-start').value),
+    rate: num(c.querySelector('.f-rate').value),
+    end: I.parseISO(c.querySelector('.f-end').value),
+  }));
+}
+function readPays() {
+  return [...document.querySelectorAll('#pays .card')].map(p => ({
+    claim: p.querySelector('.p-claim').value,
+    date: I.parseISO(p.querySelector('.p-date').value),
+    amount: num(p.querySelector('.p-amount').value),
+  }));
+}
+
+// ---------- Calcul et affichage ----------
+function update() {
+  const t = T();
+  const calc = I.parseISO($('#calc').value);
+  const basis = $('#basis').value, incl = $('#incl').checked, r05 = $('#r05').checked;
+  const claims = readClaims(), pays = readPays();
+  const alerts = [], results = [];
+  let totCap = 0, totInt = 0;
+  claims.forEach(c => {
+    const end = c.end ?? calc;
+    if (c.amount === null || c.amount <= 0) { if (c.amount !== null) alerts.push({ lvl: 'warn', html: t.aAmount(c.no) }); return; }
+    if (c.rate === null || c.rate < 0) { alerts.push({ lvl: 'warn', html: t.aRate(c.no) }); return; }
+    if (c.rate > 0 && c.start === null) { alerts.push({ lvl: 'info', html: t.aStart(c.no) }); return; }
+    if (c.rate > 0 && end === null) { alerts.push({ lvl: 'info', html: t.aCalc }); return; }
+    if (c.rate > 0 && end < c.start) { alerts.push({ lvl: 'bad', html: t.aOrder(c.no) }); return; }
+    if (c.rate > 0 && c.rate < 5) alerts.push({ lvl: 'warn', html: t.aLow(c.no, fr(c.rate)) });
+    if (c.rate > 5) alerts.push({ lvl: 'info', html: t.aHigh(c.no, fr(c.rate)) });
+    const cp = pays.filter(p => p.claim === c.id && p.date !== null && p.amount !== null && p.amount > 0);
+    const r = I.computeClaim({ amount: c.amount, rate: c.rate, start: c.start, end: c.rate > 0 ? end : (c.start ?? end ?? 0), basis, incl, payments: cp });
+    r.notes.forEach(n => alerts.push({ lvl: 'info', html: n.k === 'excess' ? t.nExcess(c.no, fs(n.date), fmt(n.amount)) : n.k === 'beforeStart' ? t.nBefore(c.no, fs(n.date)) : t.nAfter(c.no, fs(n.date)) }));
+    results.push({ c, r });
+    totCap += r.capital; totInt += r.interestTotal;
+  });
+  if (pays.some(p => p.amount && p.date && !claims.some(c => c.id === p.claim))) alerts.push({ lvl: 'warn', html: t.aOrphan });
+  $('#rAlerts').innerHTML = alerts.map(x => `<div class="alert ${x.lvl}">${x.html}</div>`).join('');
+  $('#rTitle').textContent = calc !== null ? t.totalDueAt(fs(calc)) : t.totalDue;
+
+  if (!results.length) {
+    $('#rTotal').className = 'total empty'; $('#rTotal').textContent = t.emptyTotal;
+    $('#rKpis').innerHTML = ''; $('#rDetails').hidden = true;
+    return;
+  }
+  totCap = I.round2(totCap); totInt = I.round2(totInt);
+  let total = I.round2(totCap + totInt);
+  if (r05) total = Math.round(total * 20) / 20;
+  $('#rTotal').className = 'total'; $('#rTotal').textContent = `CHF ${fmt(total)}`;
+  $('#rKpis').innerHTML = `<span class="kpi">${t.kCap}<b>CHF ${fmt(totCap)}</b></span><span class="kpi">${t.kInt}<b>CHF ${fmt(totInt)}</b></span><span class="kpi">${t.kClaims}<b>${results.length}</b></span>`;
+
+  // Tableau
+  let html = `<thead><tr><th>${t.thItem}</th><th>${t.thFrom}</th><th>${t.thTo}</th><th>${basis === 'e30360' ? t.thDays30 : t.thDays}</th><th>${t.thCap}</th><th>${t.thRate}</th><th>${t.thInt}</th></tr></thead><tbody>`;
+  results.forEach(({ c, r }) => {
+    html += `<tr class="cr"><td colspan="7">${t.claimN(c.no)}${c.label ? (LANG === 'en' ? ': ' : ' : ') + esc(c.label) : ''} (CHF ${fmt(c.amount)})</td></tr>`;
+    r.lines.forEach(l => {
+      if (l.type === 'period') html += `<tr><td>${t.rowInt}</td><td>${fs(l.from)}</td><td>${fs(l.to)}</td><td>${l.days}</td><td>${fmt(l.capital)}</td><td>${fr(l.rate)}${LANG === 'en' ? '%' : ' %'}</td><td>${fmt(l.interest)}</td></tr>`;
+      else html += `<tr><td colspan="6">${t.rowPay(fs(l.date), fmt(l.amount), fmt(l.toInterest), fmt(l.toCapital), l.excess ? fmt(l.excess) : '')}</td><td>−${fmt(l.amount - (l.excess || 0))}</td></tr>`;
+    });
+    html += `<tr class="sum"><td>${t.rowBal(c.no)}</td><td colspan="3"></td><td>${fmt(r.capital)}</td><td></td><td>${fmt(r.interestTotal)}</td></tr>`;
+  });
+  html += `<tr class="sum"><td>${t.rowTotal}</td><td colspan="3"></td><td>${fmt(totCap)}</td><td></td><td>${fmt(totInt)}</td></tr></tbody>`;
+  $('#rTable').innerHTML = html;
+
+  // Réquisition de poursuite / Debt collection request
+  const lp = []; let k = 0;
+  results.forEach(({ c, r }) => {
+    const cause = c.label || t.claimN(c.no);
+    if (r.capital > 0) { k++; lp.push(c.rate > 0 ? t.lpWith(k, fmt(r.capital), fr(c.rate), fs(r.interestFrom), cause) : t.lpWithout(k, fmt(r.capital), cause)); }
+    if (r.backlog > 0) { k++; lp.push(t.lpBacklog(k, fmt(r.backlog), fr(c.rate), cause, fs(r.backlogFrom), fs(r.backlogTo))); }
+  });
+  $('#txtLP').value = lp.join('\n\n');
+
+  // Conclusions / Prayers for relief
+  const items = [];
+  results.forEach(({ c, r }) => {
+    if (r.capital > 0) items.push(c.rate > 0 ? t.cWith(fmt(r.capital), fr(c.rate), fl(r.interestFrom)) : t.cWithout(fmt(r.capital)));
+    if (r.backlog > 0) items.push(t.cBacklog(fmt(r.backlog), fl(r.backlogTo)));
+  });
+  const letters = 'abcdefghijklmnopqrstuvwxyz';
+  $('#txtConcl').value = items.length === 1 ? t.cOne(items[0])
+    : `${t.cMany}\n${items.map((x, i) => (LANG === 'en' ? `(${letters[i]}) ` : `${letters[i]}) `) + x + (i < items.length - 1 ? (LANG === 'en' ? ';' : ' ;') : '.')).join('\n')}`;
+
+  // Décompte chiffré / Interest statement
+  const dc = [t.dcTitle(calc !== null ? fs(calc) : ''), t.dcBasis($('#basis').selectedOptions[0].textContent, incl), ''];
+  results.forEach(({ c, r }) => {
+    dc.push(t.dcClaim(c.no, c.label, fmt(c.amount)));
+    r.lines.forEach(l => dc.push(l.type === 'period'
+      ? t.dcPeriod(fr(l.rate), fmt(l.capital), fs(l.from), fs(l.to), l.days, fmt(l.interest))
+      : t.dcPay(fs(l.date), fmt(l.amount), fmt(l.toInterest), fmt(l.toCapital), l.excess ? fmt(l.excess) : '')));
+    dc.push(t.dcBal(fmt(r.capital), fmt(r.interestTotal)), '');
+  });
+  dc.push(t.dcTotal(fmt(totCap), fmt(totInt), fmt(total), r05));
+  $('#txtDc').value = dc.join('\n');
+  ['#txtLP', '#txtConcl', '#txtDc'].forEach(s => { const ta = $(s); ta.rows = Math.min(18, ta.value.split('\n').length + 1); });
+  $('#rDetails').hidden = false;
+}
+
+// ---------- Événements ----------
+['#calc', '#basis', '#incl', '#r05'].forEach(s => { $(s).addEventListener('input', update); $(s).addEventListener('change', update); });
+$('#rate').addEventListener('input', () => {
+  document.querySelectorAll('.f-rate').forEach(i => { if (!i.dataset.touched) i.value = $('#rate').value; });
+  update();
+});
+$('#addClaim').onclick = () => { claimCard(); update(); };
+$('#addPay').onclick = () => { if (!document.querySelector('#claims .card')) claimCard(); payCard(); update(); };
+document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', async () => {
+  const ta = document.getElementById(b.dataset.copy);
+  try { await navigator.clipboard.writeText(ta.value); } catch (e) { ta.select(); try { document.execCommand('copy'); } catch (_) {} }
+  b.textContent = T().copied; setTimeout(() => { b.textContent = T().copy; }, 1500);
+}));
+$('#print').addEventListener('click', () => window.print());
+$('#reset').addEventListener('click', () => { $('#claims').innerHTML = ''; $('#pays').innerHTML = ''; $('#rate').value = 5; $('#incl').checked = false; $('#r05').checked = false; $('#basis').value = 'act365'; setToday(); claimCard(); update(); });
+document.querySelectorAll('[data-lang-set]').forEach(b => b.addEventListener('click', () => { LANG = b.dataset.langSet; store.set('lang', LANG); applyLang(); }));
+
+function applyTheme(th) {
+  if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); else document.documentElement.removeAttribute('data-theme');
+  document.querySelectorAll('[data-theme-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeSet === (th || 'auto'))));
+}
+document.querySelectorAll('[data-theme-set]').forEach(b => b.addEventListener('click', () => { const th = b.dataset.themeSet; store.set('theme', th); applyTheme(th); }));
+applyTheme(store.get('theme', 'auto'));
+
+// Lien vers le code source (art. 13 AGPL), lorsque l’outil est servi par GitHub Pages
+function setSource() {
+  const h = location.hostname;
+  if (/\.github\.io$/.test(h)) {
+    const user = h.split('.')[0], repo = location.pathname.split('/').filter(Boolean)[0];
+    const url = `https://github.com/${user}${repo ? '/' + repo : ''}`;
+    $('#srcLink').innerHTML = `${T().source} <a href="${url}">${url.replace('https://', '')}</a>`;
+  } else $('#srcLink').hidden = true;
+}
+function setToday() { const d = new Date(); $('#calc').value = I.toISO(I.dn(d.getFullYear(), d.getMonth() + 1, d.getDate())); }
+
+// ---------- Démarrage ----------
+setToday();
+claimCard();
+const qs = new URLSearchParams(location.search);
+if (qs.get('lang') === 'en' || qs.get('lang') === 'fr') { LANG = qs.get('lang'); store.set('lang', LANG); }
+applyLang();
+})();
+</script>
+</body>
+</html>
