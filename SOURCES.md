@@ -1,6 +1,6 @@
 # Sources
 
-© 2026 id est avocats Sàrl ; textes sous licence [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.fr). Version 1.1 (beta).
+© 2026 id est avocats Sàrl ; textes sous licence [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.fr). Version 1.0 (beta).
 
 Textes consultés sur Fedlex, Code des obligations (CO, RS 220), état au 1er octobre 2026. Une consolidation du CO est annoncée au 1er juillet 2027 : vérifier qu’elle ne touche pas les dispositions ci-dessous.
 
@@ -16,9 +16,10 @@ Version anglaise des dispositions : [Fedlex, CO en anglais](https://www.fedlex.a
 
 ## Choix de calcul
 
-- Base de calcul par défaut : jours effectifs sur 365. Les options « jours effectifs sur 360 » et « 30/360 » (convention européenne : les 31 comptent comme 30) sont proposées pour les contrats qui les prévoient.
+- Méthode par défaut : jours calendaires sur 365, jour d’arrêt non compté, total arrondi aux 5 centimes. Variantes : « 30/360, méthode européenne », qui compte chaque mois pour 30 jours (les 31 comptent comme 30), comme la fonction Excel JOURS360 avec la méthode européenne ; « jours calendaires sur 360 », qui compte les mêmes jours que la méthode par défaut mais divise par 360.
+- Office des poursuites de Genève, « Aide au calcul des intérêts » (fichier Excel destiné aux productions de créances dans la faillite) : intérêts = capital × taux × JOURS360(date de début ; date de fin ; méthode européenne) ÷ 360, total arrondi aux 5 centimes, jour de fin non compté. La variante « 30/360, méthode européenne » reproduit ce calcul ; un écart d’au plus 5 centimes par créance peut subsister, l’Office arrondissant chaque ligne et l’outil le total.
 - Jours comptés du jour de départ inclus au jour d’arrêt exclu ; une option permet de compter aussi le dernier jour.
-- Arrondi des intérêts au centime par période ; arrondi facultatif du total aux 5 centimes.
+- Arrondi des intérêts au centime par période ; total arrondi aux 5 centimes par défaut (option désactivable).
 - Intérêt simple, sans capitalisation (art. 105 al. 3 CO).
 
 ## Réquisition de poursuite

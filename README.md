@@ -6,28 +6,25 @@ Outil en ligne de calcul des intérêts moratoires en droit suisse, développé 
 
 > **Aide au calcul uniquement.** Le résultat doit toujours être vérifié par l’utilisateur. Voir [AVERTISSEMENT.md](AVERTISSEMENT.md).
 
-Version 1.1 (beta), octobre 2026. Historique : [CHANGELOG.md](CHANGELOG.md).
+Version 1.0 (beta), octobre 2026. Historique : [CHANGELOG.md](CHANGELOG.md).
 
 ## Ce que fait l’outil
 
 - Calcul des intérêts moratoires sur une ou plusieurs créances, chacune avec son montant, la date dès laquelle les intérêts courent, son taux (5 % par défaut, art. 104 al. 1 CO) et, si nécessaire, sa propre date de fin.
 - Imputation des acomptes d’abord sur les intérêts échus, puis sur le capital (art. 85 al. 1 CO), sans intérêts sur les intérêts (art. 105 al. 3 CO).
-- Trois bases de calcul : jours effectifs sur 365 (par défaut), jours effectifs sur 360, convention bancaire 30/360. Les jours sont comptés du jour de départ inclus au jour d’arrêt exclu, sauf option contraire.
+- Méthode par défaut : jours calendaires sur 365, du jour de départ inclus au jour d’arrêt exclu, total arrondi aux 5 centimes. Une rubrique de variantes permet de choisir la méthode 30/360 européenne (notamment utilisée par l’Office des poursuites de Genève) ou les jours calendaires sur 360, de compter le dernier jour et de renoncer à l’arrondi.
 - Trois textes prêts à copier : positions pour une réquisition de poursuite, conclusions d’une demande, décompte chiffré.
 - Alertes en cas de taux inférieur à 5 % (art. 104 al. 1 CO), de taux supérieur (art. 104 al. 2 et 3 CO) ou de dates incohérentes.
 
 ## Utilisation
 
-1. Indiquer la date à laquelle le décompte est arrêté et, si nécessaire, le taux par défaut et la base de calcul.
+1. Indiquer la date à laquelle le décompte est arrêté et, si nécessaire, le taux par défaut.
 2. Saisir chaque créance : titre ou cause, montant, date de départ des intérêts, taux. Le taux de chaque créance reprend le taux par défaut (affiché en grisé) tant qu’il n’est pas modifié.
 3. Ajouter les acomptes éventuels et choisir la créance sur laquelle chacun est imputé (art. 86 et 87 CO en cas de pluralité de dettes).
-4. Copier le texte utile : réquisition de poursuite, conclusions ou décompte.
+4. Si nécessaire, choisir une autre méthode de calcul dans la rubrique « Variante de méthode de calcul ».
+5. Copier le texte utile : réquisition de poursuite, conclusions ou décompte.
 
 La langue se choisit en haut de la page (FR / EN) ; l’adresse `?lang=en` ouvre directement la version anglaise. L’affichage peut être réglé en mode clair, sombre ou automatique.
-
-## Mise en ligne
-
-L’outil tient dans un seul fichier, `index.html`, sans dépendance externe. Avec GitHub Pages : déposer les fichiers à la racine de la branche `main`, puis, dans *Settings > Pages*, choisir *Deploy from a branch*, la branche `main` et le dossier `/ (root)`.
 
 ## Protection des données
 
@@ -58,7 +55,7 @@ Online tool for calculating default interest under Swiss law, developed by id es
 
 - Calculates default interest on one or more claims, each with its amount, the date from which interest runs, its rate (5% by default, Art. 104 para. 1 CO) and, if needed, its own end date.
 - Applies part payments first to accrued interest, then to the principal (Art. 85 para. 1 CO), with no interest on interest (Art. 105 para. 3 CO).
-- Three day-count bases: actual days / 365 (default), actual days / 360, 30/360 banking convention.
+- Default method: calendar days over 365, last day not counted, total rounded to 5 centimes; variants: 30/360 European method (used in particular by the Geneva Debt Enforcement Office) and calendar days over 360.
 - Three texts ready to copy: items for a debt collection request, prayers for relief, interest statement. Debt collection requests and court submissions must be filed in the official language of the authority; the English texts are for reference only.
 
 ## Data protection

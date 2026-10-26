@@ -211,15 +211,6 @@ details.mini ul{margin:6px 0 0;padding-left:18px}
           <div><label for="rate" data-i18n="lbRate"></label><input id="rate" type="number" min="0" max="100" step="0.01" value="5" inputmode="decimal"></div>
         </div>
         <div class="hint" data-i18n="hintRate"></div>
-        <label for="basis" data-i18n="lbBasis"></label>
-        <select id="basis">
-          <option value="act365" data-i18n="bAct365"></option>
-          <option value="act360" data-i18n="bAct360"></option>
-          <option value="e30360" data-i18n="b30360"></option>
-        </select>
-        <label class="check"><input type="checkbox" id="incl"> <span data-i18n="lbIncl"></span></label>
-        <div class="hint" data-i18n="hintIncl"></div>
-        <label class="check"><input type="checkbox" id="r05"> <span data-i18n="lbR05"></span></label>
       </fieldset>
 
       <fieldset>
@@ -233,6 +224,20 @@ details.mini ul{margin:6px 0 0;padding-left:18px}
         <div class="hint" style="margin-top:0" data-i18n="hintPays"></div>
         <div class="cards" id="pays" style="margin-top:10px"></div>
         <button type="button" class="add" id="addPay" data-i18n="addPay"></button>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="n">4</span><span data-i18n="lgMethod"></span> <span class="opt" data-i18n="optional"></span></legend>
+        <div class="hint" style="margin-top:0" data-i18n="hintMethod"></div>
+        <label for="basis" data-i18n="lbBasis"></label>
+        <select id="basis">
+          <option value="act365" data-i18n="bAct365"></option>
+          <option value="e30360" data-i18n="b30360"></option>
+          <option value="act360" data-i18n="bAct360"></option>
+        </select>
+        <div class="hint" id="basisHint"></div>
+        <label class="check"><input type="checkbox" id="incl"> <span data-i18n="lbIncl"></span></label>
+        <label class="check"><input type="checkbox" id="r05" checked> <span data-i18n="lbR05"></span></label>
       </fieldset>
     </form>
 
@@ -259,6 +264,10 @@ details.mini ul{margin:6px 0 0;padding-left:18px}
           <textarea id="txtDc" readonly></textarea>
         </div>
       </div>
+      <details class="mini">
+        <summary data-i18n="hBases"></summary>
+        <ul class="rules" id="basesText"></ul>
+      </details>
       <details class="mini">
         <summary data-i18n="hPrinciples"></summary>
         <ul class="rules" id="principles"></ul>
@@ -384,7 +393,20 @@ const STR = {
     caution: '<b>Aide au calcul uniquement.</b> Vérifiez vous-même le point de départ des intérêts (demeure), le taux applicable et l’imputation des paiements. Voir l’avertissement complet sous le résultat.',
     lgParams: 'Paramètres', lbCalc: 'Décompte arrêté au', lbRate: 'Taux par défaut (%)',
     hintRate: 'Taux légal de 5 % l’an (art. 104 al. 1 CO). Un taux conventionnel supérieur peut être réclamé (art. 104 al. 2 CO).',
-    lbBasis: 'Base de calcul', bAct365: 'Jours effectifs / 365 (usuel)', bAct360: 'Jours effectifs / 360', b30360: '30 / 360 (convention bancaire)',
+    lgMethod: 'Variante de méthode de calcul', hintMethod: 'Par défaut : jours calendaires sur 365, dernier jour non compté, total arrondi aux 5 centimes.',
+    lbBasis: 'Base de calcul', bAct365: 'Jours calendaires / 365 (par défaut)', b30360: '30/360, méthode européenne (Office des poursuites de Genève)', bAct360: 'Jours calendaires / 360',
+    basisHint: {
+      act365: 'Nombre réel de jours entre les deux dates, divisé par 365 : une année entière donne exactement le taux annuel.',
+      act360: 'Même nombre réel de jours que la base 365, mais divisé par 360 : le nombre de jours affiché est identique, les intérêts sont plus élevés d’environ 1,4 % (une année entière donne 5,07 % au lieu de 5 %).',
+      e30360: 'Chaque mois compte 30 jours et l’année 360 jours (le 31 compte comme le 30) : une année entière donne 360 jours et exactement le taux annuel. Méthode notamment utilisée par l’aide au calcul des intérêts de l’Office des poursuites de Genève.',
+    },
+    hBases: 'Bases de calcul : explication',
+    bases: [
+      'Par défaut, l’outil applique la méthode des jours calendaires sur 365. D’autres méthodes existent, que la rubrique 4 permet de choisir : le code des obligations fixe le taux (5 % l’an, art. 104 al. 1 CO), mais non la manière de compter les jours. Les exemples portent sur CHF 100’000 à 5 % du 1er janvier 2026 au 26 octobre 2026.',
+      '<b>Jours calendaires / 365 (par défaut)</b> : nombre réel de jours entre la date de départ, incluse, et la date d’arrêt, exclue, divisé par 365 ; le total est arrondi aux 5 centimes. Exemple : 298 jours, intérêts de CHF 4’082.19.',
+      '<b>30/360, méthode européenne</b> : chaque mois compte 30 jours et l’année 360 jours ; le 31 est traité comme le 30. C’est notamment la méthode de l’aide au calcul des intérêts de l’Office des poursuites de Genève (fonction Excel JOURS360, méthode européenne). Exemple : 295 jours, intérêts de CHF 4’097.22. L’écart avec la méthode par défaut vient de ce que les mois de 31 jours et le mois de février sont tous comptés pour 30 jours.',
+      '<b>Jours calendaires / 360</b> : même nombre réel de jours que la méthode par défaut, mais divisé par 360, ce qui augmente les intérêts d’environ 1,4 %. Cette méthode se rencontre dans certains contrats bancaires. Exemple : 298 jours, intérêts de CHF 4’138.89.',
+    ],
     lbIncl: 'Compter aussi le dernier jour', hintIncl: 'Par défaut, les jours sont comptés du jour de départ inclus au jour d’arrêt exclu.', lbR05: 'Arrondir le total aux 5 centimes',
     lgClaims: 'Créances', addClaim: 'Ajouter une créance', lgPays: 'Acomptes', optional: '(facultatif)',
     hintPays: 'Chaque acompte est imputé d’abord sur les intérêts échus, puis sur le capital (art. 85 al. 1 CO).', addPay: 'Ajouter un acompte',
@@ -442,7 +464,20 @@ const STR = {
     caution: '<b>Calculation aid only.</b> Check the start date of interest (default), the applicable rate and the allocation of payments yourself. See the full disclaimer below the result.',
     lgParams: 'Parameters', lbCalc: 'Statement as at', lbRate: 'Default rate (%)',
     hintRate: 'Statutory rate of 5% per annum (Art. 104 para. 1 CO). A higher contractual rate may be claimed (Art. 104 para. 2 CO).',
-    lbBasis: 'Day-count basis', bAct365: 'Actual days / 365 (usual)', bAct360: 'Actual days / 360', b30360: '30 / 360 (banking convention)',
+    lgMethod: 'Calculation method variant', hintMethod: 'Default: calendar days over 365, last day not counted, total rounded to 5 centimes.',
+    lbBasis: 'Day-count basis', bAct365: 'Calendar days / 365 (default)', b30360: '30/360, European method (Geneva Debt Enforcement Office)', bAct360: 'Calendar days / 360',
+    basisHint: {
+      act365: 'Actual number of days between the two dates, divided by 365: a full year gives exactly the annual rate.',
+      act360: 'Same actual number of days as the 365 basis, but divided by 360: the number of days shown is identical, and interest is about 1.4% higher (a full year gives 5.07% instead of 5%).',
+      e30360: 'Each month counts as 30 days and the year as 360 days (the 31st counts as the 30th): a full year gives 360 days and exactly the annual rate. Method used in particular by the interest calculation aid of the Geneva Debt Enforcement Office.',
+    },
+    hBases: 'Day-count bases explained',
+    bases: [
+      'By default, the tool applies the calendar days over 365 method. Other methods exist, which can be selected in section 4: the Code of Obligations sets the rate (5% per year, Art. 104 para. 1 CO) but not how days are counted. The examples use CHF 100,000 at 5% from 1 January 2026 to 26 October 2026.',
+      '<b>Calendar days / 365 (default)</b>: actual number of days between the start date, included, and the statement date, excluded, divided by 365; the total is rounded to 5 centimes. Example: 298 days, interest of CHF 4,082.19.',
+      '<b>30/360, European method</b>: each month counts as 30 days and the year as 360 days; the 31st is treated as the 30th. This is in particular the method of the interest calculation aid of the Geneva Debt Enforcement Office (Excel DAYS360 function, European method). Example: 295 days, interest of CHF 4,097.22. The difference from the default method arises because months of 31 days and February are all counted as 30 days.',
+      '<b>Calendar days / 360</b>: same actual number of days as the default method, but divided by 360, which raises interest by about 1.4%. This method is found in some banking contracts. Example: 298 days, interest of CHF 4,138.89.',
+    ],
     lbIncl: 'Also count the last day', hintIncl: 'By default, days are counted from the start date (included) to the statement date (excluded).', lbR05: 'Round the total to 5 centimes',
     lgClaims: 'Claims', addClaim: 'Add a claim', lgPays: 'Part payments', optional: '(optional)',
     hintPays: 'Each part payment is applied first to accrued interest, then to the principal (Art. 85 para. 1 CO).', addPay: 'Add a part payment',
@@ -567,6 +602,7 @@ function applyLang() {
   document.documentElement.lang = LANG;
   document.title = t.pageTitle;
   translate();
+  $('#basesText').innerHTML = t.bases.map(p => `<li>${p}</li>`).join('');
   $('#principles').innerHTML = t.principles.map(p => `<li>${p}</li>`).join('');
   $('#disclaimerText').innerHTML = t.disclaimer.map(p => `<p>${p}</p>`).join('');
   document.querySelectorAll('[data-lang-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.langSet === LANG)));
@@ -598,6 +634,7 @@ function update() {
   const t = T();
   const calc = I.parseISO($('#calc').value);
   const basis = $('#basis').value, incl = $('#incl').checked, r05 = $('#r05').checked;
+  $('#basisHint').textContent = T().basisHint[basis];
   const claims = readClaims(), pays = readPays();
   const alerts = [], results = [];
   let totCap = 0, totInt = 0;
@@ -664,7 +701,7 @@ function update() {
     : `${t.cMany}\n${items.map((x, i) => (LANG === 'en' ? `(${letters[i]}) ` : `${letters[i]}) `) + x + (i < items.length - 1 ? (LANG === 'en' ? ';' : ' ;') : '.')).join('\n')}`;
 
   // Décompte chiffré / Interest statement
-  const dc = [t.dcTitle(calc !== null ? fs(calc) : ''), t.dcBasis($('#basis').selectedOptions[0].textContent, incl), ''];
+  const dc = [t.dcTitle(calc !== null ? fs(calc) : ''), t.dcBasis($('#basis').selectedOptions[0].textContent.replace(/ \([^)]*\)$/, ''), incl), ''];
   results.forEach(({ c, r }) => {
     dc.push(t.dcClaim(c.no, c.label, fmt(c.amount)));
     r.lines.forEach(l => dc.push(l.type === 'period'
@@ -692,7 +729,7 @@ document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click'
   b.textContent = T().copied; setTimeout(() => { b.textContent = T().copy; }, 1500);
 }));
 $('#print').addEventListener('click', () => window.print());
-$('#reset').addEventListener('click', () => { $('#claims').innerHTML = ''; $('#pays').innerHTML = ''; $('#rate').value = 5; $('#incl').checked = false; $('#r05').checked = false; $('#basis').value = 'act365'; setToday(); claimCard(); update(); });
+$('#reset').addEventListener('click', () => { $('#claims').innerHTML = ''; $('#pays').innerHTML = ''; $('#rate').value = 5; $('#incl').checked = false; $('#r05').checked = true; $('#basis').value = 'act365'; setToday(); claimCard(); update(); });
 document.querySelectorAll('[data-lang-set]').forEach(b => b.addEventListener('click', () => { LANG = b.dataset.langSet; store.set('lang', LANG); applyLang(); }));
 
 function applyTheme(th) {
